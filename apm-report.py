@@ -11,6 +11,7 @@ FORMATTED_CSV_ORDER = [
     'language',
     'Environment',
     'Application',
+    'applicationId',
     'Cost-Center',
     'feature',
     'Location',
@@ -74,6 +75,7 @@ def get_apm_metadata():
               webResponseTimeAverage
               webThroughput
             }
+            applicationId
           }
         }
       }
@@ -97,6 +99,7 @@ for item in data:
     scrubbed['accountid'] = item['account']['id']
     scrubbed['account'] = item['account']['name']
     scrubbed['name'] = item['name']
+    scrubbed['applicationId'] = item['applicationId']
     if (item['apmSummary']):
         scrubbed['apmSummary_apdexScore'] = item['apmSummary']['apdexScore']
         scrubbed['apmSummary_errorRate'] = item['apmSummary']['errorRate']
