@@ -24,7 +24,14 @@ FORMATTED_CSV_ORDER = [
     'Contact',
     'guid',
     'accountId',
-    'permalink'
+    'permalink',
+    'apmSummary_apdexScore',
+    'apmSummary_errorRate',
+    'apmSummary_hostCount',
+    'apmSummary_instanceCount',
+    'apmSummary_nonWebThroughput',
+    'apmSummary_Throughput',
+    'apmSummary_webThroughput',
 ]
 
 def get_apm_metadata():
@@ -34,29 +41,46 @@ def get_apm_metadata():
     client = GraphqlClient(endpoint="https://api.newrelic.com/graphql")
     client.headers=headers
     query = """
-        {
-        actor {
-            entitySearch(queryBuilder: {domain: APM, type: APPLICATION, name: ""}) {
-            results {
-                entities {
-                tags {
-                    key
-                    values
-                }
-                guid
-                name
-                reporting
-                permalink
-                accountId
-                account {
-                    id
-                    name
-                }
-                }
+ {
+  actor {
+    entitySearch(queryBuilder: {domain: APM, type: APPLICATION, name: ""}) {
+      results {
+        entities {
+          tags {
+            key
+            values
+          }
+          guid
+          name
+          reporting
+          permalink
+          accountId
+          account {
+            id
+            name
+          }
+          ... on ApmApplicationEntityOutline {
+            guid
+            name
+            apmSummary {
+              apdexScore
+              errorRate
+              hostCount
+              instanceCount
+              nonWebResponseTimeAverage
+              nonWebThroughput
+              responseTimeAverage
+              throughput
+              webResponseTimeAverage
+              webThroughput
             }
-            }
+          }
         }
-        }
+      }
+    }
+  }
+}
+
         """
     _result = client.execute(query=query)
     return [data for data in _result['data']['actor']['entitySearch']['results']['entities']]
@@ -73,6 +97,14 @@ for item in data:
     scrubbed['accountid'] = item['account']['id']
     scrubbed['account'] = item['account']['name']
     scrubbed['name'] = item['name']
+    if (item['apmSummary']):
+        scrubbed['apmSummary_apdexScore'] = item['apmSummary']['apdexScore']
+        scrubbed['apmSummary_errorRate'] = item['apmSummary']['errorRate']
+        scrubbed['apmSummary_hostCount'] = item['apmSummary']['hostCount']
+        scrubbed['apmSummary_instanceCount'] = item['apmSummary']['instanceCount']
+        scrubbed['apmSummary_nonWebThroughput'] = item['apmSummary']['nonWebThroughput']
+        scrubbed['apmSummary_Throughput'] = item['apmSummary']['throughput']
+        scrubbed['apmSummary_webThroughput'] = item['apmSummary']['webThroughput']
     scrubbed['reporting'] = item['reporting']
     scrubbed['permalink'] = item['permalink']
 
