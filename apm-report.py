@@ -146,3 +146,4 @@ with open('apm-report.csv', 'w') as f:
     w = csv.DictWriter(f, FORMATTED_CSV_ORDER, extrasaction='ignore')
     w.writeheader()
     w.writerows(apm_objects)
+
