@@ -48,7 +48,7 @@ def get_trace_app_index():
             for app in apps:
                 if app:
                     app_index.add(int(app))
-        print(app_index)
+        #print(app_index)
         return app_index
             
 
